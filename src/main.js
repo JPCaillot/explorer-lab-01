@@ -17,7 +17,7 @@ function setCardType(type){
   ccLogo.setAttribute("src", `cc-${type}.svg`)
 }
 
-setCardType("visa")
+setCardType("default")
 
 globalThis.setCardType = setCardType //possible to edit from the devtools console: globalThis.setCardType("type")
 
@@ -46,7 +46,7 @@ const expirationDatePattern = {
 const expirationDateMasked = IMask(expirationDate, expirationDatePattern)
 
 //card number masks
-//visa - starts with 4 with 15 moore digits
+//visa - starts with 4 with 15 more digits
 // ^4\d{0,15}
 //mastercard - starts with 5 followed by a 1 to 5 digit, followed by 2 more digits
 //OR starts with 22 followed by a 2 to 9 digit, followed by one more digit
@@ -59,7 +59,7 @@ const cardNumberPattern = {
   mask: [
     {
       mask: "0000 0000 0000 0000",
-      regex: /^4\d{0,15/,
+      regex: /^4\d{0,15}/,
       cardtype: "visa",
     },
     {
@@ -84,3 +84,39 @@ const cardNumberPattern = {
   },
 }
 const cardNumberMasked = IMask(cardNumber, cardNumberPattern)
+
+const addButton = document.querySelector("#add-card")
+addButton.addEventListener("click", () => {
+  alert("Cartão adicionado!")
+})
+
+document.querySelector("form").addEventListener("submit", (event) => {
+  event.preventDefault()
+})
+
+const cardHolder = document.querySelector("#card-holder")
+cardHolder.addEventListener("input", () => {
+  const ccHolder = document.querySelector(".cc-holder .value")
+
+  ccHolder.innerText = cardHolder.value.length === 0 ? "FULANO DA SILVA" : cardHolder.value
+})
+
+securityCodeMasked.on("accept", () => {
+  updateSecurityCode(securityCodeMasked.value)
+}) // on = addEventListener (iMasked)
+
+function updateSecurityCode(code){
+  const ccSecurity = document.querySelector(".cc-security .value")
+  ccSecurity.innerText = code.length === 0 ? "123" : code
+}
+
+cardNumberMasked.on("accept", () => {
+  const cardType = cardNumberMasked.masked.currentMask.cardtype
+  setCardType(cardType)
+  updateCardNumber(cardNumberMasked.value)
+})
+
+function updateCardNumber(number){
+  const ccNumber = document.querySelector(".cc-number")
+  ccNumber.innerText = number.length === 0 ? "1234 5678 9012 3456" : number
+}
